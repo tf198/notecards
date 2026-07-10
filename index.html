@@ -58,7 +58,7 @@
           <div class="container">
             <div class="box" :class="message && 'has-background-warning-light'">
               <div class="columns is-family-monospace">
-                <div class="column has-text-weight-bold" x-text="message">Hello</div>
+                <div class="column has-text-weight-bold" x-text="message"></div>
                 <div class="column has-text-right">Time: <span x-text="remaining"></span>s Cards: <span x-text="correct"></span> Score: <span x-text="score"></span></div>
               </div>
               <div x-show="remaining"><progress :value="remaining"  :max="gameLength" style="width: 100%"></progress></div>
@@ -67,7 +67,7 @@
         </div>
         <div id="result-pane" x-cloak x-show="$store.state === 'results'">
           <h2 class="title has-text-centered"><span x-text="gameName"></span> (<span x-text="gameLength"></span>s)</h2>
-          <div class="notification is-success" x-text="stats.message"></div>
+          <div class="notification is-success has-text-centered has-text-weight-bold" x-text="stats.message"></div>
           <table class="table mx-auto">
             <tbody>
               <tr><th>Score</th><td><span x-text="score"></span></td></tr>
@@ -77,7 +77,7 @@
               <tr><th>Seconds per Card</th><td><span x-text="stats.secondsPerCard"</td></tr>
             </tbody>
           </table>
-          <h3><a x-on:click="startGame()">Play again...</a></h3>
+          <div class="has-text-centered"><a class="button is-primary" x-on:click="startGame()">Play again...</a></div>
         </div>
         <div id="choose-pane" x-show="$store.state === 'select'">
           <h2 class="title has-text-centered"><span x-text="settings.instrumentName"></span> Games</h2>

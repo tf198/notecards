@@ -16,3 +16,4 @@ firefox notecards/index.html
 * [ ] Basic Cello mode
 * [ ] All fingers
 * [ ] Note names
+* [ ] Listening mode?

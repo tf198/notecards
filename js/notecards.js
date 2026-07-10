@@ -5,8 +5,7 @@ function App() {
   let settings = JSON.parse(localStorage.getItem("settings"));
   if (settings == null) {
     settings = {
-      gameLength: "60",
-      gameDescription: "1 Minute Challenge",
+      gameLength: "30",
       instrumentName: "Violin"
     }
   }
