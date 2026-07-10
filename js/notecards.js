@@ -78,6 +78,7 @@ function Game() {
       this.note = null;
       this.incorrect = 0;
       this.remaining = this.gameLength;
+      window.clearInterval(this.timer);
       this.timer = window.setInterval(() => {
         this.remaining--;
         if (this.remaining == 5) this.send_message("Hurry up...");

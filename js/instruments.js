@@ -74,10 +74,10 @@ class StringInstrument {
   openAndSecondsGame() {
     let game = [];
     for (let n of this.strings) {
-      game.push([midi2note(n)+'0', midi2abc(n)]);
+      game.push([midi2note(n), midi2abc(n)]);
     }
     for (let n of this.strings) {
-      game.push([midi2note(n)+'2', midi2abc(n+4)]);
+      game.push(['2', midi2abc(n+4)]);
     }
     return game;
   }
@@ -86,6 +86,8 @@ class StringInstrument {
     let game = [];
     for (let n of this.strings) {
       game.push([midi2note(n)+'1', midi2abc(n+2)]);
+    }
+    for (let n of this.strings) {
       game.push([midi2note(n)+'3', midi2abc(n+5)]);
     }
     return game;

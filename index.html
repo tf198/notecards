@@ -27,7 +27,7 @@
         </a>
       </div>
       <div id="navSettings" class="navbar-menu">
-        <a class="navbar-item" @click="$store.state = 'select'"><span x-text="settings.instrumentName"></span> Games</a>
+        <a class="navbar-item" @click="$store.state = 'select'"><span x-text="settings.instrumentName + ' Games'"></span></a>
         <a class="navbar-item" @click="$store.state = 'settings'">Settings</a>
       </div>
     </nav>
@@ -56,9 +56,11 @@
             </div>
           </div>
           <div class="container">
-            <div class="notification is-warning" x-text="message" x-show="message" x-transition></div>
-            <div class="box">
-              <div class="has-text-right is-family-monospace">Time: <span x-text="remaining"></span>s Cards: <span x-text="correct"></span> Score: <span x-text="score"></span></div>
+            <div class="box" :class="message && 'has-background-warning-light'">
+              <div class="columns is-family-monospace">
+                <div class="column has-text-weight-bold" x-text="message">Hello</div>
+                <div class="column has-text-right">Time: <span x-text="remaining"></span>s Cards: <span x-text="correct"></span> Score: <span x-text="score"></span></div>
+              </div>
               <div x-show="remaining"><progress :value="remaining"  :max="gameLength" style="width: 100%"></progress></div>
             </div>
           </div>
@@ -93,7 +95,7 @@
             </tbody>
           </table>
         </div>
-        <div id="settings-pane" x-clone x-show="$store.state === 'settings'">
+        <div id="settings-pane" x-cloak x-show="$store.state === 'settings'">
           <h2 class="title">Settings</h2>
           <div class="box">
             <div class="field is-horizontal">
@@ -139,6 +141,7 @@
                 <div class="field">
                   <div class="control">
                     <button class="button is-primary" @click="saveSettings(); $store.state = 'select'">Save</button>
+                    <button class="button" @click="localStorage.removeItem('highscores'); window.location=''">Clear Scores</button>
                   </div>
                 </div>
               </div>
