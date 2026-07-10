@@ -1,0 +1,24 @@
+@media screen and (min-width: 769px) {
+    .answers {
+        flex-direction: column;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .button-group {
+        flex-direction: column !important;
+    }
+}
+
+.button-group {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+}
+
+#note {
+    padding-top: 20px;
+}
+
+[x-cloak] {
+  display: none !important;
+}

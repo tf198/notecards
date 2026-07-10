@@ -1,104 +1,187 @@
 
-games = {
-    'Open Strings':         [['G','g,,'], ['D','d,'], ['A','a,'], ['E','e']],
-    'Opens and Seconds':    [['D-0', 'd,'], ['D-2', 'f,'], ['A-0', 'a,'], ['A-2', 'c']],
-    'D String Fingers':     [['0', 'd,'], ['1', 'e,'], ['2','^f,'], ['3','g,']],
-    'A String Fingers':     [['0', 'a,'], ['1', 'b,'], ['2','^c'], ['3','d']],
-    'A and D Strings':      [['D-0', 'd,'], ['D-1', 'e,'], ['D-2', 'f,'], ['D-3', 'g,'], ['A-0', 'a,'], ['A-1', 'b,'], ['A-2', 'c'], ['A-3', 'd']] ,
+
+function App() {
+
+  let settings = JSON.parse(localStorage.getItem("settings"));
+  if (settings == null) {
+    settings = {
+      gameLength: "60",
+      gameDescription: "1 Minute Challenge",
+      instrumentName: "Violin"
+    }
+  }
+
+  return {
+    settings,
+
+    get instrument() {
+      return INSTRUMENTS[settings.instrumentName];
+    },
+
+    saveSettings() {
+      localStorage.setItem("settings", JSON.stringify(this.settings));
+    }
+
+  }
 }
 
-
 function Game() {
-    return {
-        note: null,
-        buttons: [],
-        locked: false,
-        score: 0,
-        correct: 0,
-        incorrect: 0,
-        remaining: 0,
-        message: '',
-        timer: null,
-        gameName: '',
-        highscores: {},
+  return {
+    note: null,
+    buttons: [],
+    buttonGroups: [],
+    locked: false,
+    score: 0,
+    correct: 0,
+    incorrect: 0,
+    remaining: 0,
+    gameLength: 0,
+    message: '',
+    timer: null,
+    gameName: '',
+    highscores: {},
+    stats: {},
 
-        init() {
-            console.log("INIT");
-            this.highscores = JSON.parse(localStorage.getItem('highscores'));
-            if (this.highscores === null) this.highscores = {};
-        },
-        
-        start(game) {
-            console.log("Starting " + game);
-            if (!games[game]) {
-                this.send_message("Unknown game");
-                return;
-            }
-            this.gameName = game;
-            console.log("GAME", this.gameName);
-            Alpine.store('state', 'playing');
+    init() {
+      console.log("INIT");
+      this.highscores = JSON.parse(localStorage.getItem('highscores'));
+      if (this.highscores === null) this.highscores = {};
+    },
 
-            this.buttons = games[game];
-            this.score = 0;
-            this.locked = false;
-            this.correct = -1;
-            this.note = null;
-            this.incorrect = 0;
-            this.remaining = 30;
-            this.timer = window.setInterval(() => {
-                this.remaining--;
-                if (this.remaining == 5) this.send_message("Hurry up...");
-                if (this.remaining <=0) {
-                    window.clearInterval(this.timer);
-                    this.remaining = 0;
-                    Alpine.store('state', 'results');
-                    this.note = null;
-                    this.send_message("Game over - you scored " + this.score);
-                    if (this.score > this.highscore(game)) {
-                        this.send_message("New HighScore!");
-                        this.highscores[game] = this.score;
-                        localStorage.setItem('highscores', JSON.stringify(this.highscores));
-                    }
-                }
-            }, 1000);
-            this.check(null);
-        },
+    loadGame(instrument, gameName, gameLength) {
+      this.gameName = gameName;
+      this.gameLength = parseInt(gameLength);
+      
+      console.log("Loading " + gameName);
+      let game = instrument.games[gameName];
+      if (!game) {
+        this.send_message("Unknown game");
+        return;
+      }
 
-        highscore(game) {
-            return this.highscores[game];
-        },
-        
-        send_message(m, unlock) {
-            this.message = m;
-            setTimeout(() => {
-                this.message = '';
-                if (unlock) {
-                    this.locked = false;
-                }
-            }, 1000);
-        },
+      if (typeof(game) == 'function') {
+        game = game();
+      }
 
-        check(note) {
-            if (note != this.note) {
-                console.log("Wrong");
-                this.locked = true;
-                this.send_message("Try again...", true);
-                this.incorrect++;
-                this.score = this.correct - this.incorrect;
-                return;
-            }
+      this.buttons = game
+      this.buttonGroups = this.button_groups(game);
 
-            this.correct++;
-            this.score = this.correct - this.incorrect;
-            let n = Math.floor(Math.random()*this.buttons.length);
-            if (this.buttons[n][1] == this.note) {
-                n = (n + 1) % 3;
-            }
-            this.note = this.buttons[n][1];
+    },
+
+    startGame() {
+      Alpine.store('state', 'playing');
+
+      this.score = 0;
+      this.stats = {};
+      this.locked = false;
+      this.correct = -1;
+      this.note = null;
+      this.incorrect = 0;
+      this.remaining = this.gameLength;
+      this.timer = window.setInterval(() => {
+        this.remaining--;
+        if (this.remaining == 5) this.send_message("Hurry up...");
+        if (this.remaining <=0) {
+          window.clearInterval(this.timer);
+          this.remaining = 0;
+          Alpine.store('state', 'results');
+          this.note = null;
+
+          this.score = this.score * 60 / this.gameLength;
+
+          this.stats.correct = this.correct;
+          this.stats.incorrect = this.incorrect;
+          this.stats.accuracy = Math.ceil(this.correct * 100 / (this.correct+this.incorrect));
+          this.stats.secondsPerCard = Math.round(10 * this.gameLength/this.correct) / 10;
+
+          this.stats.message = this.resultMessage(this.score);
+
+          console.log(this.stats);
+
+          if (this.score > this.highscore(this.gameName)) {
+            this.stats.message = `New HighScore - ${this.score}!`;
+            this.highscores[this.gameName] = this.score;
+            localStorage.setItem('highscores', JSON.stringify(this.highscores));
+          }
+
         }
+      }, 1000);
+      this.check(null);
+    },
+
+    resultMessage(score) {
+      if (score > 45) return `Wow, ${score} is super impressive!`;
+      if (score > 30) return `You scored ${score} - pretty good!`;
+      if (score > 15) return `Not bad - keep trying`;
+      return "Have another go!";
+    },
+
+    button_groups(buttons) {
+      let groups = []
+      for (let i=0; i<buttons.length; i+=4) {
+        groups.push([buttons[i], buttons[i+1], buttons[i+2], buttons[i+3]])
+      }
+      console.log(groups);
+      return groups;
+    },
+
+    highscore(game) {
+      return this.highscores[game] || 0;
+    },
+
+    send_message(m, unlock) {
+      this.message = m;
+      setTimeout(() => {
+        this.message = '';
+        if (unlock) {
+          this.locked = false;
+        }
+      }, 1000);
+    },
+
+    check(note) {
+      if (note != this.note) {
+        console.log("Wrong");
+        this.locked = true;
+        this.send_message("Oops - try again!", true);
+        this.incorrect++;
+        this.score = this.correct - this.incorrect;
+        return;
+      }
+
+      this.correct++;
+      this.score = this.correct - this.incorrect;
+      let n = Math.floor(Math.random()*this.buttons.length);
+      if (this.buttons[n][1] == this.note) {
+        n = (n + 1) % 3;
+      }
+      this.note = this.buttons[n][1];
     }
+  }
 }
 
 document.addEventListener('alpine:init', () => {
-    Alpine.store('state', 'select');
+  Alpine.store('state', 'select');
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  // Get all "navbar-burger" elements
+  const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+  // Add a click event on each of them
+  $navbarBurgers.forEach( el => {
+    el.addEventListener('click', () => {
+
+      // Get the target from the "data-target" attribute
+      const target = el.dataset.target;
+      const $target = document.getElementById(target);
+
+      // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+      el.classList.toggle('is-active');
+      $target.classList.toggle('is-active');
+
+    });
+  });
+
 });

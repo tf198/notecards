@@ -1,84 +1,151 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>NoteCards</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css" />
-        <link rel="stylesheet" href="notecards.css" />
-        <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-        <script src="js/abcjs-basic-min.js"></script>
-        <script src="js/notecards.js"></script>
-    </head>
-    <body>
-        <nav class="navbar is-light" x-data>
-            <div class="navbar-brand">
-                <a class="navbar-item subtitle" x-on:click="$store.state = 'select'">NoteCards</a>
+<html data-theme="light">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>NoteCards</title>
+    <link rel="icon" type="image/png" href="static/quavers.png" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
+    <link rel="stylesheet" href="static/notecards.css" />
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="js/abcjs-basic-min.js"></script>
+    <script src="js/instruments.js"></script>
+    <script src="js/notecards.js"></script>
+  </head>
+  <body x-data="App()">
+    <nav class="navbar is-light" role="navigation" aria-label="main navigation" x-data>
+      <div class="navbar-brand">
+        <a class="navbar-item" @click="$store.state = 'select'">
+          <img src="static/quavers.svg" />
+          NoteCards
+        </a>
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navSettings">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+      </div>
+      <div id="navSettings" class="navbar-menu">
+        <a class="navbar-item" @click="$store.state = 'select'"><span x-text="settings.instrumentName"></span> Games</a>
+        <a class="navbar-item" @click="$store.state = 'settings'">Settings</a>
+      </div>
+    </nav>
+    <section class="section">
+      <div class="container is-max-tablet" x-data="Game()">
+        <div id="play-panel" x-cloak x-show="$store.state === 'playing'">
+          <h2 class="title has-text-centered"><span x-text="gameName"></span> (<span x-text="gameLength"></span>s)</h2>
+          <div class="columns is-centered is-vcentered">
+            <div class="column is-narrow" x-effect="ABCJS.renderAbc('note', '%%scale 2\nK:' + instrument.clef + '\n' + note + '2');">
+              <div class="box mx-auto" style="width: 250px">
+                <div id="note" style="max-width: 200px; min-height: 250px; margin: auto;"></div>
+              </div>
             </div>
-            <div class="navbar-menu">
-                <div class="navbar-item">
-                    <a class="navbar-item" x-on:click="$store.state = 'select'">Games</a>
-                </div>
-            </div>
-        </nav>
-        <section class="section has-text-centered" x-data="Game()">
-            <div id="play-panel" x-cloak x-show="$store.state === 'playing'">
-                <h2 x-text="gameName" class="title"></h2>
-                <div class="columns is-centered is-vcentered">
-                    <div class="column is-narrow" x-effect="ABCJS.renderAbc('note', '%%scale 2\n' + note + '2');">
-                        <div class="box mx-auto" style="width: 250px">
-                            <div id="note" style="max-width: 200px; min-height: 300px; margin: auto;"></div>
-                        </div>
-                    </div>
-                    <div class="column is-narrow">
-                        <div class="mx-auto answers" style="max-width: 475px; max-height: 350px;">
-                        <template x-for="button in buttons">
-                            <button class="button is-large answer" 
-                                x-bind:disabled="locked"
-                                x-on:click="check(button[1])" x-text="button[0]" style="margin: 10px;"></button>
-                        </template>
-                        </div>
-                    </div>
-                </div>
-                <div class="column is-narrow">
-                    <div class="box">
-                        <div class="has-text-right is-family-monospace">Time: <span x-text="remaining"></span>s Cards: <span x-text="correct"></span> <span x-show="incorrect">[-<span x-text="incorrect"></span>]</span></div>
-                        <div x-show="remaining"><progress :value="remaining"  max="30" style="width: 100%"></progress></div>
-                    </div>
-                    <div class="notification is-warning" x-text="message" x-show="message"></div>
-                </div>
-            </div>
-            <div id="result-pane" x-cloak x-show="$store.state === 'results'">
-                <h2 x-text="gameName" class="title"></h2>
-                <h3 class="subtitle">Well done!  You scored <span x-text="score"></span></h3>
-                <table class="table mx-auto">
-                    <thead>
-                        <tr><th colspan="2">Scorecard</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><th>Cards</th><td x-text="correct"></td></tr>
-                        <tr><th>Errors</th><td x-text="incorrect"></td></tr>
-                        <tr x-show="correct + incorrect"><th>Accuracy</th><td><span x-text="Math.ceil(correct * 100 / (correct+incorrect))"></span>%</td></tr>
-                    </tbody>
-                </table>
-                <h3><a x-on:click="start(gameName)">Play again...</a></h3>
-            </div>
-            <div id="choose-pane" x-show="$store.state === 'select'">
-                <h2 class="title">Games</h2>
-                <table class="table mx-auto is-hoverable">
-                    <thead>
-                        <tr>
-                            <th>Game</th>
-                            <th>Highscore</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <template x-for="(game, name) in games">
-                        <tr><td><a x-text="name" x-on:click="start(name)"></a></td><td x-text="highscore(name)"></td></tr>
+            <div class="column is-narrow">
+              <div class="mx-auto answers" style="max-width: 500px; max-height: 350px;">
+                <template x-for="buttonGroup in buttonGroups">
+                  <div class="button-group">
+                    <template x-for="button in buttonGroup">
+                      <button class="button answer" 
+                        x-bind:disabled="locked"
+                        x-on:click="check(button[1])" x-text="button[0]" style="margin: 10px;"></button>
                     </template>
-                    </tbody>
-                </table>
+                  </div>
+                </template>
+              </div>
             </div>
-        </section>
-    </body>
+          </div>
+          <div class="container">
+            <div class="notification is-warning" x-text="message" x-show="message" x-transition></div>
+            <div class="box">
+              <div class="has-text-right is-family-monospace">Time: <span x-text="remaining"></span>s Cards: <span x-text="correct"></span> Score: <span x-text="score"></span></div>
+              <div x-show="remaining"><progress :value="remaining"  :max="gameLength" style="width: 100%"></progress></div>
+            </div>
+          </div>
+        </div>
+        <div id="result-pane" x-cloak x-show="$store.state === 'results'">
+          <h2 class="title has-text-centered"><span x-text="gameName"></span> (<span x-text="gameLength"></span>s)</h2>
+          <div class="notification is-success" x-text="stats.message"></div>
+          <table class="table mx-auto">
+            <tbody>
+              <tr><th>Score</th><td><span x-text="score"></span></td></tr>
+              <tr><th>Cards</th><td x-text="correct"></td></tr>
+              <tr><th>Errors</th><td x-text="incorrect"></td></tr>
+              <tr x-show="correct + incorrect"><th>Accuracy</th><td><span x-text="Math.ceil(correct * 100 / (correct+incorrect))"></span>%</td></tr>
+              <tr><th>Seconds per Card</th><td><span x-text="stats.secondsPerCard"</td></tr>
+            </tbody>
+          </table>
+          <h3><a x-on:click="startGame()">Play again...</a></h3>
+        </div>
+        <div id="choose-pane" x-show="$store.state === 'select'">
+          <h2 class="title has-text-centered"><span x-text="settings.instrumentName"></span> Games</h2>
+          <table class="table mx-auto is-hoverable">
+            <thead>
+              <tr>
+                <th>Game</th>
+                <th>Highscore</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for="(game, name) in instrument.games">
+                <tr><td><a x-text="name" x-on:click="loadGame(instrument, name, settings.gameLength); startGame()"></a></td><td x-text="highscore(name)"></td></tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+        <div id="settings-pane" x-clone x-show="$store.state === 'settings'">
+          <h2 class="title">Settings</h2>
+          <div class="box">
+            <div class="field is-horizontal">
+              <div class="field-label">
+                <label class="label">Instrument</label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="control is-expanded">
+                    <div class="select is-fullwidth">
+                      <select x-model:value="settings.instrumentName">
+                        <option>Violin</option>
+                        <option>Viola</option>
+                        <!--option>Cello</option-->
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="field is-horizontal">
+              <div class="field-label">
+                <label class="label">Length</label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="control is-expanded">
+                    <div class="select is-fullwidth">
+                      <select x-model:value="settings.gameLength" type="number">
+                        <option value="10">Quick test</option>
+                        <option value="30">30 Seconds Speed Round</option>
+                        <option value="60">1 Minute Challenge</option>
+                        <option value="300">5 Minute Practice</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="field is-horizontal">
+              <div class="field-label"></div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="control">
+                    <button class="button is-primary" @click="saveSettings(); $store.state = 'select'">Save</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
 </html>
