@@ -3,10 +3,16 @@
 /* MIDI FUNCTIONS */
 
 const ABC_NOTES = ['c', '^c', 'd', '^d', 'e', 'f', '^f', 'g', '^g', 'a', '^a', 'b'];
+
+const NATURAL_NOTES = ['A', 'B', 'C','D', 'E', 'F', 'G'];
 const SHARP_NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
-const VIOLIN_BASIC_FINGERING = [0, 2, 4, 5]; // High second fingers
-const CELLO_BASIC_FINGERING = [0, 2, 3, 4, 5];
+const TONIC = 0;
+const SECOND = 2;
+const MINOR_THIRD = 3;
+const MAJOR_THIRD = 4;
+const PERFECT_FOURTH = 5;
+const PERFECT_FIFTH = 7;
 
 const VIOLIN_SHARP_FINGERING = ["0", "L1", "1", "L2", "H2", "3"];
 
@@ -35,14 +41,35 @@ function midi2note(n, octave) {
 
 /* Instrument Definitions */
 
+class GameOptions {
+  constructor(buttons, questions) {
+    this.buttons = buttons || [];
+    this.questions = questions || [];
+  }
+
+  addPair(note, button) {
+    this.buttons.push(button);
+    this.addSingle(note, button)
+  }
+
+  addSingle(note, button) {
+    this.questions.push([note, button]);
+  }
+
+}
+
 class StringInstrument {
 
-  constructor(lowestString=55, clef='treble', tuningInterval=7, stringCount=4) {
+  constructor(lowestString=55,
+              clef='treble',
+              tuningInterval=PERFECT_FIFTH,
+              stringCount=4) {
     this.lowestString = lowestString;
     this.clef = clef;
     this.tuningInterval = tuningInterval;
     this.stringCount = stringCount;
     this.strings = this.getStrings();
+    this.basicFingering = [TONIC, SECOND, MAJOR_THIRD, PERFECT_FOURTH];
   }
 
   getStrings() {
@@ -57,62 +84,98 @@ class StringInstrument {
   get games() {
     return {
       'Open Strings': this.openStringsGame.bind(this),
-      'Open and Seconds': this.openAndSecondsGame.bind(this),
-      'First and Thirds': this.firstAndThirdsGame.bind(this),
-      'All Fingers': this.allFingers.bind(this),
+      'Basic Fingers': this.allBasicFingers.bind(this),
+      'Note Names': this.noteNames.bind(this),
     };
   }
 
   openStringsGame() {
-    let game = [];
+    let game = new GameOptions();
     for (let n of this.strings) {
-      game.push([midi2note(n), midi2abc(n)]);
+      game.addPair(midi2abc(n), midi2note(n));
     }
     return game;
   }
 
+
+  allBasicFingers() {
+    let game = new GameOptions();
+    let c = this.basicFingering.length
+    for (let f=0; f<c; f++) {
+      for (let n of this.strings) {
+        let label = f ? f : midi2note(n);
+        game.addPair(midi2abc(n+this.basicFingering[f]), label);
+      }
+    }
+    return game;
+  }
+  
+  noteNames() {
+    let game = new GameOptions(NATURAL_NOTES);
+    for (let i=0; i< 25; i++) {
+      let noteName = midi2note(this.lowestString+i);
+      if (noteName.length == 1) {
+        game.addSingle(midi2abc(this.lowestString+i), noteName);
+      }
+    }
+
+    return game;
+  }
+
+}
+
+class Violin extends StringInstrument {
+  
+  get games() {
+    return {
+      'Open Strings': this.openStringsGame.bind(this),
+      'Open and Seconds': this.openAndSecondsGame.bind(this),
+      'First and Thirds': this.firstAndThirdsGame.bind(this),
+      'Basic Fingers': this.allBasicFingers.bind(this),
+      'Note Names': this.noteNames.bind(this),
+    };
+  }
+
   openAndSecondsGame() {
-    let game = [];
+    let game = new GameOptions();
     for (let n of this.strings) {
-      game.push([midi2note(n), midi2abc(n)]);
+      game.addPair(midi2abc(n), midi2note(n));
     }
     for (let n of this.strings) {
-      game.push(['2', midi2abc(n+4)]);
+      let note = midi2abc(n+4);
+      game.addPair(note, "2");
     }
     return game;
   }
 
   firstAndThirdsGame() {
-    let game = [];
+    let game = new GameOptions(['E', 'A', 'D', 'G']);
     for (let n of this.strings) {
-      game.push([midi2note(n)+'1', midi2abc(n+2)]);
+      game.addPair(midi2abc(n+2), '1');
     }
     for (let n of this.strings) {
-      game.push([midi2note(n)+'3', midi2abc(n+5)]);
+      game.addPair(midi2abc(n+5), '3');
     }
     return game;
   }
 
-  allFingers() {
-    let game = [];
-    for (let f=0; f<4; f++) {
-      for (let n of this.strings) {
-        let label = f ? f : midi2note(n);
-        game.push([label, midi2abc(n+VIOLIN_BASIC_FINGERING[f])])
-      }
-    }
-    console.log(game);
-    return game;
-  }
-  
-  noteNames() {
-    
-  }
+}
 
+class Viola extends Violin {
+  constructor() {
+    super(48, "alto");
+  }
+}
+
+class Cello extends StringInstrument {
+  constructor() {
+    super(36, "bass");
+    this.basicFingering = [TONIC, SECOND, MINOR_THIRD, MAJOR_THIRD, PERFECT_FOURTH];
+  }
 }
 
 const INSTRUMENTS = {
-  "Violin": new StringInstrument(55),
-  "Viola": new StringInstrument(48, "alto"),
-  "Cello": new StringInstrument(36, "bass")
-}
+  "Violin": new Violin(),
+  "Viola": new Viola(),
+  "Cello": new Cello(),
+};

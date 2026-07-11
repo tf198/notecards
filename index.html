@@ -38,7 +38,7 @@
           <div class="columns is-centered is-vcentered">
             <div class="column is-narrow" x-effect="ABCJS.renderAbc('note', '%%scale 2\nK:' + instrument.clef + '\n' + note + '2');">
               <div class="box mx-auto" style="width: 250px">
-                <div id="note" style="max-width: 200px; min-height: 250px; margin: auto;"></div>
+                <div id="note" style="max-width: 200px; min-height: 220px; margin: auto;"></div>
               </div>
             </div>
             <div class="column is-narrow">
@@ -48,7 +48,7 @@
                     <template x-for="button in buttonGroup">
                       <button class="button answer" 
                         x-bind:disabled="locked"
-                        x-on:click="check(button[1])" x-text="button[0]" style="margin: 10px;"></button>
+                        x-on:click="check(button)" x-text="button" style="margin: 10px;"></button>
                     </template>
                   </div>
                 </template>
@@ -67,17 +67,19 @@
         </div>
         <div id="result-pane" x-cloak x-show="$store.state === 'results'">
           <h2 class="title has-text-centered"><span x-text="gameName"></span> (<span x-text="gameLength"></span>s)</h2>
-          <div class="notification is-success has-text-centered has-text-weight-bold" x-text="stats.message"></div>
+          <div class="notification is-success has-text-centered has-text-weight-bold">
+            <h1 class="is-size-1">Score <span x-text=score></span></h1>
+            <h3 class="is-size-5" x-text="stats.message"></h3>
+          </div>
           <table class="table mx-auto">
             <tbody>
-              <tr><th>Score</th><td><span x-text="score"></span></td></tr>
               <tr><th>Cards</th><td x-text="correct"></td></tr>
               <tr><th>Errors</th><td x-text="incorrect"></td></tr>
-              <tr x-show="correct + incorrect"><th>Accuracy</th><td><span x-text="Math.ceil(correct * 100 / (correct+incorrect))"></span>%</td></tr>
               <tr><th>Seconds per Card</th><td><span x-text="stats.secondsPerCard"</td></tr>
+              <tr x-show="correct + incorrect"><th>Accuracy</th><td><span x-text="Math.ceil(correct * 100 / (correct+incorrect))"></span>%</td></tr>
             </tbody>
           </table>
-          <div class="has-text-centered"><a class="button is-primary" x-on:click="startGame()">Play again...</a></div>
+          <div class="has-text-centered"><a class="button is-success" x-on:click="startGame()">Play again...</a></div>
         </div>
         <div id="choose-pane" x-show="$store.state === 'select'">
           <h2 class="title has-text-centered"><span x-text="settings.instrumentName"></span> Games</h2>
@@ -109,7 +111,7 @@
                       <select x-model:value="settings.instrumentName">
                         <option>Violin</option>
                         <option>Viola</option>
-                        <!--option>Cello</option-->
+                        <option>Cello</option>
                       </select>
                     </div>
                   </div>
