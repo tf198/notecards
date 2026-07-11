@@ -134,6 +134,7 @@ class Violin extends StringInstrument {
       'Open Strings': this.openStringsGame.bind(this),
       'Open and Seconds': this.openAndSecondsGame.bind(this),
       'First and Thirds': this.firstAndThirdsGame.bind(this),
+      //'High or Low?': this.highOrLowGame.bind(this),
       'Basic Fingers': this.allBasicFingers.bind(this),
       'Note Names': this.noteNames.bind(this),
     };
@@ -158,7 +159,7 @@ class Violin extends StringInstrument {
 
   firstAndThirdsGame() {
     let game = new GameOptions();
-    ['E', 'A', 'D', 'G'].forEach((x) => game.addButton(x));
+    this.strings.forEach((x) => game.addButton(midi2note(x)));
     for (let n of this.strings) {
       let interval = SECOND;
       if (midi2note(n+interval).length==2) interval--;
@@ -174,6 +175,14 @@ class Violin extends StringInstrument {
     return game;
   }
 
+  highOrLowGame() {
+    let game = new GameOptions();
+    this.strings.forEach((n) => game.addButton(midi2note(n)));
+    this.strings.forEach((n) => game.addButton("L2", midi2abc(n+MINOR_THIRD)));
+    this.strings.forEach((n) => game.addButton("H2", midi2abc(n+MAJOR_THIRD)));
+    let d = 62;
+    ["F"].forEach(game.addQuestion);
+  }
 }
 
 class Viola extends Violin {
