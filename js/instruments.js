@@ -42,18 +42,17 @@ function midi2note(n, octave) {
 /* Instrument Definitions */
 
 class GameOptions {
-  constructor(buttons, questions) {
-    this.buttons = buttons || [];
-    this.questions = questions || [];
+  constructor() {
+    this.buttons = [];
+    this.questions = [];
   }
 
-  addPair(note, button) {
-    this.buttons.push(button);
-    this.addSingle(note, button)
+  addButton(label, answer=null) {
+    this.buttons.push([label, answer || label]);
   }
 
-  addSingle(note, button) {
-    this.questions.push([note, button]);
+  addQuestion(note, answer=null) {
+    this.questions.push([note, answer || note]);
   }
 
 }
@@ -92,7 +91,9 @@ class StringInstrument {
   openStringsGame() {
     let game = new GameOptions();
     for (let n of this.strings) {
-      game.addPair(midi2abc(n), midi2note(n));
+      let label = midi2note(n);
+      game.addButton(label);
+      game.addQuestion(midi2abc(n), label);
     }
     return game;
   }
@@ -103,22 +104,24 @@ class StringInstrument {
     let c = this.basicFingering.length
     for (let f=0; f<c; f++) {
       for (let n of this.strings) {
+        let note = midi2abc(n+this.basicFingering[f]);
         let label = f ? f : midi2note(n);
-        game.addPair(midi2abc(n+this.basicFingering[f]), label);
+        game.addButton(label, note);
+        game.addQuestion(note);
       }
     }
     return game;
   }
   
   noteNames() {
-    let game = new GameOptions(NATURAL_NOTES);
+    let game = new GameOptions();
+    NATURAL_NOTES.forEach((x) => game.addButton(x));
     for (let i=0; i< 25; i++) {
       let noteName = midi2note(this.lowestString+i);
       if (noteName.length == 1) {
-        game.addSingle(midi2abc(this.lowestString+i), noteName);
+        game.addQuestion(midi2abc(this.lowestString+i), noteName);
       }
     }
-
     return game;
   }
 
@@ -139,22 +142,34 @@ class Violin extends StringInstrument {
   openAndSecondsGame() {
     let game = new GameOptions();
     for (let n of this.strings) {
-      game.addPair(midi2abc(n), midi2note(n));
+      let note = midi2abc(n);
+      game.addButton(midi2note(n), note);
+      game.addQuestion(note);
     }
     for (let n of this.strings) {
-      let note = midi2abc(n+4);
-      game.addPair(note, "2");
+      let interval = MAJOR_THIRD;
+      if (midi2note(n+interval).length==2) interval = MINOR_THIRD;
+      let note = midi2abc(n+interval);
+      game.addButton("2", note);
+      game.addQuestion(note);
     }
     return game;
   }
 
   firstAndThirdsGame() {
-    let game = new GameOptions(['E', 'A', 'D', 'G']);
+    let game = new GameOptions();
+    ['E', 'A', 'D', 'G'].forEach((x) => game.addButton(x));
     for (let n of this.strings) {
-      game.addPair(midi2abc(n+2), '1');
+      let interval = SECOND;
+      if (midi2note(n+interval).length==2) interval--;
+      let note = midi2abc(n+interval);
+      game.addButton("1", note)
+      game.addQuestion(note);
     }
     for (let n of this.strings) {
-      game.addPair(midi2abc(n+5), '3');
+      let note = midi2abc(n+PERFECT_FOURTH);
+      game.addButton("3", note)
+      game.addQuestion(note);
     }
     return game;
   }
