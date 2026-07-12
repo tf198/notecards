@@ -1,0 +1,21 @@
+{
+  "name": "NoteCards",
+  "short_name": "NoteCards",
+  "description": "Music note reading game for Violin, Viola, and Cello",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#f5f5f5",
+  "icons": [
+    {
+      "src": "static/quavers.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "static/quavers.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

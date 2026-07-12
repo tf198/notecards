@@ -5,12 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>NoteCards</title>
     <link rel="icon" type="image/png" href="static/quavers.png" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f5f5f5" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
     <link rel="stylesheet" href="static/notecards.css" />
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="js/abcjs-basic-min.js"></script>
     <script src="js/instruments.js"></script>
     <script src="js/notecards.js"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js');
+      }
+    </script>
   </head>
   <body x-data="App()">
     <nav class="navbar is-light" role="navigation" aria-label="main navigation" x-data>
