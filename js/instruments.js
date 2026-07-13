@@ -26,7 +26,6 @@ function midi2abc(n) {
     note_name = note_name.toUpperCase();
     modifier = modifier.padEnd(Math.abs(octave)-1, ',');
   } else {
-    console.log(octave);
     modifier = modifier.padEnd(octave, '\'');
   }
   return note_name + modifier;
@@ -135,6 +134,7 @@ class Violin extends StringInstrument {
       'Open and Seconds': this.openAndSecondsGame.bind(this),
       'First and Thirds': this.firstAndThirdsGame.bind(this),
       //'High or Low?': this.highOrLowGame.bind(this),
+      'Which String?': this.whichStringGame.bind(this),
       'Basic Fingers': this.allBasicFingers.bind(this),
       'Note Names': this.noteNames.bind(this),
     };
@@ -171,6 +171,20 @@ class Violin extends StringInstrument {
       let note = midi2abc(n+PERFECT_FOURTH);
       game.addButton("3", note)
       game.addQuestion(note);
+    }
+    return game;
+  }
+
+  whichStringGame() {
+    let game = new GameOptions();
+    for (let n of this.strings) {
+      let string = midi2note(n);
+      game.addButton(string);
+      for (let i=0; i<6; i++) {
+        if (midi2note(n+i).length == 1) {
+          game.addQuestion(midi2abc(n+i), string);
+        }
+      }
     }
     return game;
   }
