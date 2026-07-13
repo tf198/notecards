@@ -1,6 +1,5 @@
 const CACHE_NAME = 'notecards-v1';
 const ASSETS = [
-  '.',
   'index.html',
   'manifest.json',
   'static/notecards.css',
@@ -14,6 +13,7 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
+  console.log("Service worker install");
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
@@ -21,6 +21,7 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
+  console.log("Service worker activate");
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
@@ -30,6 +31,7 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  console.log("Service worker fetch");
   event.respondWith(
     caches.match(event.request).then((cached) => cached || fetch(event.request))
   );

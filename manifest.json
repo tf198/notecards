@@ -8,13 +8,18 @@
   "theme_color": "#f5f5f5",
   "icons": [
     {
-      "src": "static/quavers.png",
-      "sizes": "192x192",
+      "src": "static/quavers.svg",
+      "sizes": "72x72 96x96 128x128 256x256 512x512",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "static/quavers-32.png",
+      "sizes": "32x32",
       "type": "image/png"
     },
     {
-      "src": "static/quavers.png",
-      "sizes": "512x512",
+      "src": "static/quavers-16.png",
+      "sizes": "16x16",
       "type": "image/png"
     }
   ]
