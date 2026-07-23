@@ -43,7 +43,7 @@
   <body x-data="App()">
     <nav class="navbar is-light" role="navigation" aria-label="main navigation" x-data>
       <div class="navbar-brand">
-        <a class="navbar-item" @click="$store.state = 'select'">
+        <a class="navbar-item" @click="changeState('select')">
           <img src="static/quavers.svg" />
           NoteCards
         </a>
@@ -55,8 +55,8 @@
         </a>
       </div>
       <div id="navSettings" class="navbar-menu">
-        <a class="navbar-item" @click="$store.state = 'select'"><span x-text="settings.instrumentName + ' Games'"></span></a>
-        <a class="navbar-item" @click="$store.state = 'settings'">Settings</a>
+        <a class="navbar-item" @click="changeState('select')"><span x-text="settings.instrumentName + ' Games'"></span></a>
+        <a class="navbar-item" @click="changeState('settings')">Settings</a>
       </div>
     </nav>
     <section class="section">
@@ -111,7 +111,9 @@
               <tr x-show="correct + incorrect"><th>Accuracy</th><td><span x-text="Math.ceil(correct * 100 / (correct+incorrect))"></span>%</td></tr>
             </tbody>
           </table>
-          <div class="has-text-centered"><a class="button is-success" x-on:click="startGame()">Play again...</a></div>
+          <div class="has-text-centered" x-show="locked === false" x-transition>
+            <a class="button is-success" x-on:click="startGame()">Play again...</a>
+          </div>
         </div>
 
         <!-- GAME SELECTION PANE -->
@@ -178,7 +180,7 @@
               <div class="field-body">
                 <div class="field">
                   <div class="control">
-                    <button class="button is-primary" @click="saveSettings(); $store.state = 'select'">Save</button>
+                    <button class="button is-primary" @click="saveSettings(); changeState('select')">Save</button>
                     <button class="button" @click="localStorage.removeItem('highscores'); window.location=''">Clear Scores</button>
                   </div>
                 </div>

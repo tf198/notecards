@@ -24,6 +24,10 @@ function App() {
   }
 }
 
+function changeState(state) {
+  Alpine.store('state', state);
+}
+
 function Game() {
   return {
     gameName: '',
@@ -70,6 +74,7 @@ function Game() {
     },
 
     startGame() {
+
       this.score = 0;
       this.correct = -1;
       this.incorrect = 0;
@@ -83,15 +88,17 @@ function Game() {
       
       Alpine.store('state', 'playing');
 
-      window.clearInterval(this.timer);
       this.timer = window.setInterval(() => {
+
+        if (Alpine.store('state') !== 'playing') {
+          this.stopGame();
+          return;
+        }        
+
         this.remaining--;
         if (this.remaining == 5) this.send_message("Hurry up...");
         if (this.remaining <=0) {
-          window.clearInterval(this.timer);
-          this.remaining = 0;
-          Alpine.store('state', 'results');
-          this.note = null;
+          this.stopGame()
 
           this.score = this.score * 60 / this.gameLength;
 
@@ -107,10 +114,22 @@ function Game() {
             this.highscores[this.gameName] = this.score;
             localStorage.setItem('highscores', JSON.stringify(this.highscores));
           }
+          
+          // switch to result pane
+          this.locked = true;
+          setTimeout(() => this.locked = false, 2000);
+          Alpine.store('state', 'results');
 
         }
       }, 1000);
       this.check(null);
+    },
+
+    stopGame() {
+      console.log("Stopping game...");
+      window.clearInterval(this.timer);
+      this.remaining = 0;
+      this.note = null;
     },
 
     resultMessage(score) {
