@@ -76,7 +76,7 @@
                 <template x-for="buttonGroup in buttonGroups">
                   <div class="button-group">
                     <template x-for="button in buttonGroup">
-                      <button class="button answer" 
+                      <button class="button answer is-size-5" 
                         x-bind:disabled="locked"
                         x-on:click="check(button[1])" x-text="button[0]" style="margin: 10px;"></button>
                     </template>
@@ -119,7 +119,7 @@
         <!-- GAME SELECTION PANE -->
         <div id="choose-pane" x-show="$store.state === 'select'">
           <h2 class="title has-text-centered"><span x-text="settings.instrumentName"></span> Games</h2>
-          <table class="table mx-auto is-hoverable">
+          <table class="table mx-auto is-hoverable is-size-5 is-size-6-mobile">
             <thead>
               <tr>
                 <th>Game</th>
