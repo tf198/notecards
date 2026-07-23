@@ -123,7 +123,7 @@
         <!-- GAME SELECTION PANE -->
         <div id="choose-pane" x-show="$store.state === 'select'">
           <h2 class="title has-text-centered"><span x-text="settings.instrumentName"></span> Games</h2>
-          <table class="table mx-auto is-hoverable is-size-5 is-size-6-mobile">
+          <table class="table mx-auto is-hoverable is-size-5">
             <thead>
               <tr>
                 <th>Game</th>
@@ -132,7 +132,10 @@
             </thead>
             <tbody>
               <template x-for="(game, name) in instrument.games">
-                <tr><td><a x-text="name" x-on:click="loadGame(instrument, name, settings.gameLength); startGame()"></a></td><td x-text="highscore(name)"></td></tr>
+                <tr>
+                  <td><a x-text="name" x-on:click="loadGame(instrument, name, settings.gameLength); startGame()"></a></td>
+                  <td class="has-text-centered" x-text="highscore(name)"></td>
+                </tr>
               </template>
             </tbody>
           </table>
