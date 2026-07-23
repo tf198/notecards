@@ -40,7 +40,7 @@ function midi2note(n, octave) {
 
 /* Instrument Definitions */
 
-class GameOptions {
+class Quiz {
   constructor() {
     this.buttons = [];
     this.questions = [];
@@ -82,48 +82,48 @@ class StringInstrument {
 
   get games() {
     return {
-      'Open Strings': this.openStringsGame.bind(this),
+      'Open Strings': this.openStringsQuiz.bind(this),
       'Basic Fingers': this.allBasicFingers.bind(this),
       'Note Names': this.noteNames.bind(this),
     };
   }
 
-  openStringsGame() {
-    let game = new GameOptions();
+  openStringsQuiz() {
+    let quiz = new Quiz();
     for (let n of this.strings) {
       let label = midi2note(n);
-      game.addButton(label);
-      game.addQuestion(midi2abc(n), label);
+      quiz.addButton(label);
+      quiz.addQuestion(midi2abc(n), label);
     }
-    return game;
+    return quiz;
   }
 
 
   allBasicFingers() {
-    let game = new GameOptions();
+    let quiz = new Quiz();
     let c = this.basicFingering.length
     for (let f=0; f<c; f++) {
       for (let n of this.strings) {
         let note = midi2abc(n+this.basicFingering[f]);
         let label = f ? f : midi2note(n);
-        game.addButton(label, note);
-        game.addQuestion(note);
+        quiz.addButton(label, note);
+        quiz.addQuestion(note);
       }
     }
-    return game;
+    return quiz;
   }
   
   noteNames() {
-    let game = new GameOptions();
-    game.reverse = false;
-    NATURAL_NOTES.forEach((x) => game.addButton(x));
+    let quiz = new Quiz();
+    quiz.reverse = false;
+    NATURAL_NOTES.forEach((x) => quiz.addButton(x));
     for (let i=0; i< 25; i++) {
       let noteName = midi2note(this.lowestString+i);
       if (noteName.length == 1) {
-        game.addQuestion(midi2abc(this.lowestString+i), noteName);
+        quiz.addQuestion(midi2abc(this.lowestString+i), noteName);
       }
     }
-    return game;
+    return quiz;
   }
 
 }
@@ -132,72 +132,72 @@ class Violin extends StringInstrument {
   
   get games() {
     return {
-      'Open Strings': this.openStringsGame.bind(this),
-      'Which String?': this.whichStringGame.bind(this),
-      'Open or Second?': this.openAndSecondsGame.bind(this),
-      'First or Third?': this.firstAndThirdsGame.bind(this),
-      //'High or Low?': this.highOrLowGame.bind(this),
+      'Open Strings': this.openStringsQuiz.bind(this),
+      'Which String?': this.whichStringQuiz.bind(this),
+      'Open or Second?': this.openAndSecondsQuiz.bind(this),
+      'First or Third?': this.firstAndThirdsQuiz.bind(this),
+      //'High or Low?': this.highOrLowQuiz.bind(this),
       'Basic Fingers': this.allBasicFingers.bind(this),
       'Note Names': this.noteNames.bind(this),
     };
   }
 
-  openAndSecondsGame() {
-    let game = new GameOptions();
+  openAndSecondsQuiz() {
+    let quiz = new Quiz();
     for (let n of this.strings) {
       let note = midi2abc(n);
-      game.addButton(midi2note(n), note);
-      game.addQuestion(note);
+      quiz.addButton(midi2note(n), note);
+      quiz.addQuestion(note);
     }
     for (let n of this.strings) {
       let interval = MAJOR_THIRD;
       if (midi2note(n+interval).length==2) interval = MINOR_THIRD;
       let note = midi2abc(n+interval);
-      game.addButton("2", note);
-      game.addQuestion(note);
+      quiz.addButton("2", note);
+      quiz.addQuestion(note);
     }
-    return game;
+    return quiz;
   }
 
-  firstAndThirdsGame() {
-    let game = new GameOptions();
-    this.strings.forEach((x) => game.addButton(midi2note(x)));
+  firstAndThirdsQuiz() {
+    let quiz = new Quiz();
+    this.strings.forEach((x) => quiz.addButton(midi2note(x)));
     for (let n of this.strings) {
       let interval = SECOND;
       if (midi2note(n+interval).length==2) interval--;
       let note = midi2abc(n+interval);
-      game.addButton("1", note)
-      game.addQuestion(note);
+      quiz.addButton("1", note)
+      quiz.addQuestion(note);
     }
     for (let n of this.strings) {
       let note = midi2abc(n+PERFECT_FOURTH);
-      game.addButton("3", note)
-      game.addQuestion(note);
+      quiz.addButton("3", note)
+      quiz.addQuestion(note);
     }
-    return game;
+    return quiz;
   }
 
-  whichStringGame() {
-    let game = new GameOptions();
+  whichStringQuiz() {
+    let quiz = new Quiz();
     for (let n of this.strings) {
       let string = midi2note(n);
-      game.addButton(string);
+      quiz.addButton(string);
       for (let i=0; i<6; i++) {
         if (midi2note(n+i).length == 1) {
-          game.addQuestion(midi2abc(n+i), string);
+          quiz.addQuestion(midi2abc(n+i), string);
         }
       }
     }
-    return game;
+    return quiz;
   }
 
-  highOrLowGame() {
-    let game = new GameOptions();
-    this.strings.forEach((n) => game.addButton(midi2note(n)));
-    this.strings.forEach((n) => game.addButton("L2", midi2abc(n+MINOR_THIRD)));
-    this.strings.forEach((n) => game.addButton("H2", midi2abc(n+MAJOR_THIRD)));
+  highOrLowQuiz() {
+    let quiz = new Quiz();
+    this.strings.forEach((n) => quiz.addButton(midi2note(n)));
+    this.strings.forEach((n) => quiz.addButton("L2", midi2abc(n+MINOR_THIRD)));
+    this.strings.forEach((n) => quiz.addButton("H2", midi2abc(n+MAJOR_THIRD)));
     let d = 62;
-    ["F"].forEach(game.addQuestion);
+    ["F"].forEach(quiz.addQuestion);
   }
 }
 

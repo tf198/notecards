@@ -35,11 +35,10 @@ function hideMenu() {
 
 function Game() {
   return {
+    quiz: {},
     gameName: '',
     gameLength: 0,
-    questions: [],
     buttonGroups: [],
-    buttonsRevese: false,
     
     highscores: {},
 
@@ -64,20 +63,19 @@ function Game() {
       this.gameLength = parseInt(gameLength);
       
       console.log("Loading " + gameName);
-      let game = instrument.games[gameName];
+      let quiz = instrument.games[gameName];
       
-      if (!game) {
+      if (!quiz) {
         this.send_message("Unknown game!");
         return;
       }
 
-      if (typeof(game) == 'function') {
-        game = game();
+      if (typeof(quiz) == 'function') {
+        quiz = quiz();
       }
 
-      this.buttonGroups = this.button_groups(game.buttons);
-      this.buttonsReverse = game.reverse;
-      this.questions = game.questions;
+      this.buttonGroups = this.button_groups(quiz.buttons);
+      this.quiz = quiz;
     },
 
     startGame() {
@@ -125,7 +123,7 @@ function Game() {
           
           // switch to result pane
           this.locked = true;
-          setTimeout(() => this.locked = false, 2000);
+          setTimeout(() => this.locked = false, 1500);
           Alpine.store('state', 'results');
 
         }
@@ -186,11 +184,11 @@ function Game() {
      
       let n = 0;
       while(true) {
-        n = Math.floor(Math.random()*this.questions.length);
-        if (this.questions[n][0] != this.note) break;
+        n = Math.floor(Math.random()*this.quiz.questions.length);
+        if (this.quiz.questions[n][0] != this.note) break;
       }
-      this.note = this.questions[n][0];
-      this.expected = this.questions[n][1];
+      this.note = this.quiz.questions[n][0];
+      this.expected = this.quiz.questions[n][1];
     }
   }
 }
