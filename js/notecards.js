@@ -28,12 +28,18 @@ function changeState(state) {
   Alpine.store('state', state);
 }
 
+function hideMenu() {
+  document.getElementById("navSettings").classList.remove('is-active');
+  document.getElementById("navBurgers").classList.remove('is-active');
+}
+
 function Game() {
   return {
     gameName: '',
     gameLength: 0,
     questions: [],
     buttonGroups: [],
+    buttonsRevese: false,
     
     highscores: {},
 
@@ -58,7 +64,7 @@ function Game() {
       this.gameLength = parseInt(gameLength);
       
       console.log("Loading " + gameName);
-      game = instrument.games[gameName];
+      let game = instrument.games[gameName];
       
       if (!game) {
         this.send_message("Unknown game!");
@@ -70,10 +76,12 @@ function Game() {
       }
 
       this.buttonGroups = this.button_groups(game.buttons);
+      this.buttonsReverse = game.reverse;
       this.questions = game.questions;
     },
 
     startGame() {
+      hideMenu();
 
       this.score = 0;
       this.correct = -1;

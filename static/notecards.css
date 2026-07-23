@@ -11,8 +11,15 @@
 
 .button-group {
   display: flex;
-  flex-direction: row-reverse;
   justify-content: center;
+}
+
+.button-group-reversed {
+  flex-direction: row-reverse;
+}
+
+.button-group .button {
+  min-width: 56px;
 }
 
 #note {

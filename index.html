@@ -47,7 +47,7 @@
           <img src="static/quavers.svg" />
           NoteCards
         </a>
-        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navSettings">
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navSettings" id="navBurgers">
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
@@ -74,7 +74,7 @@
             <div class="column is-narrow">
               <div class="mx-auto answers" style="max-width: 500px; max-height: 350px;">
                 <template x-for="buttonGroup in buttonGroups">
-                  <div class="button-group">
+                  <div class="button-group" :class="buttonsReverse && 'button-group-reversed'">
                     <template x-for="button in buttonGroup">
                       <button class="button answer is-size-5" 
                         x-bind:disabled="locked"
@@ -87,9 +87,13 @@
           </div>
           <div class="container">
             <div class="box" :class="message && 'has-background-warning-light'">
-              <div class="columns is-family-monospace">
-                <div class="column has-text-weight-bold" x-text="message"></div>
-                <div class="column has-text-right">Time: <span x-text="remaining"></span>s Cards: <span x-text="correct"></span> Score: <span x-text="score"></span></div>
+              <div class="is-family-monospace">
+                <div class="has-text-weight-bold" x-text="message"></div>
+                <div class="has-text-right" x-show="!message">
+                  Time: <span x-text="remaining"></span>s
+                  Cards: <span x-text="correct"></span>
+                  Score: <span x-text="score"></span>
+                </div>
               </div>
               <div x-show="remaining"><progress :value="remaining"  :max="gameLength" style="width: 100%"></progress></div>
             </div>

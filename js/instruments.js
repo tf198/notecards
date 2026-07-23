@@ -44,6 +44,7 @@ class GameOptions {
   constructor() {
     this.buttons = [];
     this.questions = [];
+    this.reverse = true;
   }
 
   addButton(label, answer=null) {
@@ -114,6 +115,7 @@ class StringInstrument {
   
   noteNames() {
     let game = new GameOptions();
+    game.reverse = false;
     NATURAL_NOTES.forEach((x) => game.addButton(x));
     for (let i=0; i< 25; i++) {
       let noteName = midi2note(this.lowestString+i);
@@ -131,10 +133,10 @@ class Violin extends StringInstrument {
   get games() {
     return {
       'Open Strings': this.openStringsGame.bind(this),
-      'Open and Seconds': this.openAndSecondsGame.bind(this),
-      'First and Thirds': this.firstAndThirdsGame.bind(this),
-      //'High or Low?': this.highOrLowGame.bind(this),
       'Which String?': this.whichStringGame.bind(this),
+      'Open or Second?': this.openAndSecondsGame.bind(this),
+      'First or Third?': this.firstAndThirdsGame.bind(this),
+      //'High or Low?': this.highOrLowGame.bind(this),
       'Basic Fingers': this.allBasicFingers.bind(this),
       'Note Names': this.noteNames.bind(this),
     };
