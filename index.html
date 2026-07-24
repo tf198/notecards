@@ -40,7 +40,7 @@
       registerServiceWorker();
     </script>
   </head>
-  <body x-data="App()">
+  <body x-data="app">
     <nav class="navbar is-light" role="navigation" aria-label="main navigation" x-data>
       <div class="navbar-brand">
         <a class="navbar-item" @click="changeState('select')">
@@ -60,7 +60,7 @@
       </div>
     </nav>
     <section class="section">
-      <div class="container is-max-tablet" x-data="Game()">
+      <div class="container is-max-tablet" x-data="game">
 
         <!-- GAME PANE -->
         <div id="play-panel" x-cloak x-show="$store.state === 'playing'">
@@ -153,7 +153,7 @@
                 <div class="field">
                   <div class="control is-expanded">
                     <div class="select is-fullwidth">
-                      <select x-model:value="settings.instrumentName">
+                      <select x-model:value="settings.instrumentName" x-on:change="saveSettings()">
                         <option>Violin</option>
                         <option>Viola</option>
                         <option>Cello</option>
@@ -171,7 +171,7 @@
                 <div class="field">
                   <div class="control is-expanded">
                     <div class="select is-fullwidth">
-                      <select x-model:value="settings.gameLength" type="number">
+                      <select x-model:value="settings.gameLength" type="number" x-on:change="saveSettings()">
                         <option value="10">Quick test</option>
                         <option value="30">30 Seconds Speed Round</option>
                         <option value="60">1 Minute Challenge</option>
@@ -187,7 +187,7 @@
               <div class="field-body">
                 <div class="field">
                   <div class="control">
-                    <button class="button is-primary" @click="saveSettings(); changeState('select')">Save</button>
+                    <button class="button is-primary" @click="changeState('select')">Continue</button>
                     <button class="button" @click="localStorage.removeItem('highscores'); window.location=''">Clear Scores</button>
                   </div>
                 </div>

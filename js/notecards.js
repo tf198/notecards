@@ -12,12 +12,10 @@ function App() {
 
   return {
     settings,
-
-    get instrument() {
-      return INSTRUMENTS[settings.instrumentName];
-    },
+    instrument: INSTRUMENTS[settings.instrumentName],
 
     saveSettings() {
+      this.instrument = INSTRUMENTS[settings.instrumentName];
       localStorage.setItem("settings", JSON.stringify(this.settings));
     }
 
@@ -195,6 +193,8 @@ function Game() {
 
 document.addEventListener('alpine:init', () => {
   Alpine.store('state', 'select');
+  Alpine.data('app', App);
+  Alpine.data('game', Game);
 });
 
 document.addEventListener('DOMContentLoaded', () => {
